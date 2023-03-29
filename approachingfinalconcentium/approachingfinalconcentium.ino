@@ -2,10 +2,9 @@
 #include <WiFiManager.h>
 //rx2 tx2 pin 16 , 17 WROOM ESP32
 #include <Wire.h>
-#include <Wire.h>
 #include "MAX30100_PulseOximeter.h"
 
-#define REPORTING_PERIOD_MS     1000
+#define REPORTING_PERIOD_MS    5000
 
 // Create a PulseOximeter object
 PulseOximeter pox;
@@ -24,14 +23,11 @@ float lat,lng=0;
 ConsentiumThings board;   // create ConsentiumThing object
 String sid; //from user
 String pss;
-const long interval = 5; // take 5 seconds of delay 
+const long interval = 10; // take 5 seconds of delay 
 const char *key = "Default";       // Write api key
 
 int spo2; //SPO2 value
 int heartRate; //heart rate value
-
-byte pulseLED = 11; //Must be on PWM pin
-byte readLED = 13; //Blinks with each data read
 
 void setup() {
   Serial.begin(115200);
@@ -78,11 +74,8 @@ void setup() {
   
   Serial.print("Custom text box entry: ");
   Serial.println(custom_text_box.getValue());
-  Serial.begin(9600);
 
   Serial2.begin(9600);
-
-  delay(10000);
 
   Serial.println(F("DHTxx test!"));
 
@@ -101,18 +94,16 @@ void setup() {
 
 // Callback routine is executed when a pulse is detected
 void onBeatDetected() {
-    Serial.println("Beat!");
+    Serial.println("♥ Beat!");
 }
 
 
 void loop() {
 
 
-  delay(2000);
    int touch =touchRead(T9);// get value using T9 pin 32 (value depends upon the initial condition)
 
    Serial.println(touch);  
-  delay(1000);
   float h = dht.readHumidity();
   // Read temperature as Celsius (the default)
   float t = dht.readTemperature();
@@ -170,7 +161,6 @@ void loop() {
     Serial.println(F("No GPS detected: check wiring."));
     while (true);
   }
-
 
 }
 
