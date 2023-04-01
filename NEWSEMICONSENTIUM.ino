@@ -19,7 +19,7 @@ uint32_t tsLastReport = 0;
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 TinyGPSPlus gps;
-float lat,lng;
+float lat,lng=0;
 ConsentiumThings board;   // create ConsentiumThing object
 
 
@@ -29,8 +29,9 @@ const long interval = 5; // take 5 seconds of delay
 const char *key = "TDYPO5YGBUBESFTWVQUXXG";       // Write api key
 
 void setup() {
-  Serial.begin(115200);
-
+  Serial.begin(9600);
+  Serial2.begin(9600);
+  delay(3000);
     Serial.print("Initializing pulse oximeter..");
 
     // Initialize sensor
