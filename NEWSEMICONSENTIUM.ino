@@ -1,6 +1,17 @@
 #include <TinyGPSPlus.h>
 #include <WiFiManager.h>
 //rx2 tx2 pin 16 , 17 WROOM ESP32
+#include <Wire.h>
+#include "MAX30100_PulseOximeter.h"
+
+#define REPORTING_PERIOD_MS    5000
+
+// Create a PulseOximeter object
+PulseOximeter pox;
+
+// Time at which the last beat occurred
+uint32_t tsLastReport = 0;
+
 
 #include <ConsentiumThings.h>
 #include "DHT.h"
@@ -8,65 +19,55 @@
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 TinyGPSPlus gps;
-float lat,lng=0;
+float lat,lng;
 ConsentiumThings board;   // create ConsentiumThing object
-String sid; //from user
-String pss;
+
+
+const char *ssid = "Hackerwifi"; // add WiFi SSID
+const char *pass = "sayak123"; // add WiFi password
 const long interval = 5; // take 5 seconds of delay 
-const char *key = "Default";       // Write api key
+const char *key = "TDYPO5YGBUBESFTWVQUXXG";       // Write api key
+
 void setup() {
-   WiFiManager wfm;
+  Serial.begin(115200);
 
+    Serial.print("Initializing pulse oximeter..");
 
-  wfm.setDebugOutput(false);
+    // Initialize sensor
+    if (!pox.begin()) {
+        Serial.println("FAILED");
+        for(;;);
+    } else {
+        Serial.println("SUCCESS");
+    }
 
-  wfm.resetSettings();
+	// Configure sensor to use 7.6mA for LED drive
+	pox.setIRLedCurrent(MAX30100_LED_CURR_7_6MA);
 
-    WiFiManagerParameter custom_text_box("my_text", "Enter the API KEY ", "xyxyxyx", 50);
-  // Add custom parameter
-  wfm.addParameter(&custom_text_box);
+    // Register a callback routine
+    pox.setOnBeatDetectedCallback(onBeatDetected);
 
-  if (!wfm.autoConnect("IOT-JACKET", "iotjacket")) {
-    // Did not connect, print error message
-    Serial.println("failed to connect and hit timeout");
-
-    // Reset and try again
-    ESP.restart();
-    delay(1000);
-  }
-
-  Serial.println("WiFi connected");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
   
-  Serial.print("Custom text box entry: ");
-  Serial.println(custom_text_box.getValue());
-  Serial.begin(9600);
-
-  Serial2.begin(9600);
-
-  delay(10000);
-
-  Serial.println(F("DHTxx test!"));
 
   dht.begin();
+ 
   board.begin();   // init. IoT boad
-     //read the connected WiFi SSID and password
-    sid = WiFi.SSID();
-    pss = WiFi.psk();
-     const char *ssid=(char*)sid.c_str();
-     const char *pass=(char*)pss.c_str();
-     const char *key = (char*)custom_text_box.getValue();
   board.initWiFi(ssid, pass);  // begin WiFi connection
 
 }
+
+// Callback routine is executed when a pulse is detected
+void onBeatDetected() {
+    Serial.println("♥ Beat!");
+}
+
+
 void loop() {
 
-  delay(2000);
+
    int touch =touchRead(T9);// get value using T9 pin 32 (value depends upon the initial condition)
 
    Serial.println(touch);  
-  delay(1000);
   float h = dht.readHumidity();
   // Read temperature as Celsius (the default)
   float t = dht.readTemperature();
@@ -79,19 +80,18 @@ void loop() {
     return;
   }
 
-  // Compute heat index in Fahrenheit (the default)
-  float hif = dht.computeHeatIndex(f, h);
-  // Compute heat index in Celsius (isFahreheit = false)
-  float hic = dht.computeHeatIndex(t, h, false);
+
 
   Serial.print(F("Humidity: "));
   Serial.print(h);
   Serial.print(F("%  Temperature: "));
   Serial.print(t);
-  Serial.print(F("°C "));
-  Serial.print(f);
-  float sensor_val[] = {t,h,touch,lat,lng};  // sensor data array
-  String info_buff[] = {"Temperature","Humidity","Touch","Latitude","Longitude"}; // sensor info. array
+   Serial.println(F("HeartRate: "));
+ Serial.print( heartbeat());
+ float hrt=89.87;
+ float sp=100;
+  float sensor_val[] = {t,h,touch,lat,lng,hrt,sp };  // sensor data array
+  String info_buff[] = {"Temperature","Humidity","Touch","Latitude","Longitude","Heartbeat", "SpO2"}; // sensor info. array
   
   int sensor_num = sizeof(sensor_val)/sizeof(sensor_val[0]); // number of sensors connected 
   
@@ -109,7 +109,6 @@ void loop() {
     Serial.println(F("No GPS detected: check wiring."));
     while (true);
   }
-
 
 }
 
@@ -170,4 +169,23 @@ void updateSerial()
 
   }
 
+}
+float heartbeat()
+{ float  heartrate,spo2;
+   pox.update();
+
+    // Grab the updated heart rate and SpO2 levels
+    if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
+        Serial.print("Heart rate:");
+        heartrate=pox.getHeartRate();
+        Serial.print(pox.getHeartRate());
+        Serial.print("bpm / SpO2:");
+        spo2 =pox.getSpO2(); 
+        Serial.print(pox.getSpO2());
+        Serial.println("%");
+
+        tsLastReport = millis();
+    }
+    
+   return heartrate;
 }
