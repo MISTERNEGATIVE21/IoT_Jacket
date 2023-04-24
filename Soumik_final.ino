@@ -90,7 +90,7 @@ void loop() {
   Serial.print(t);
    Serial.println(F("HeartRate: "));
  Serial.print( heartbeat());
- if(touch <= 40){
+ if(touch <= 35){   //40 ,35
  hrt= random(80,90);
  sp=random(98,101);}
  else{
