@@ -1,13 +1,13 @@
 # IoT Smart Jacket
 
-![Smart Jacket Image](iot-jacket.jpg)
+![Smart Jacket Image](iot.png)
 
 The IoT Smart Jacket is a wearable technology project that integrates various sensors and devices to provide real-time environmental and health data. This README file provides an overview of the project and how to get started.
 
 ## Components
 
 The IoT Smart Jacket incorporates the following components:
-
+![Smart Jacket Image](iot-jacket.jpg)
 - **Neo GPS**: Allows for location tracking and movement analysis.
 - **DHT11**: Measures temperature and humidity in the surrounding environment.
 - **ESP32**: Serves as the central processing unit for data collection and communication.
@@ -22,7 +22,7 @@ The IoT Smart Jacket incorporates the following components:
 - **Wireless Connectivity**: The ESP32 connects to local Wi-Fi networks or other IoT devices using the ESP Touch sensor.
 - **Data Storage**: Collects and stores data for later analysis or transmission to a central server.
 - **User-Friendly Interface**: Provides an intuitive way for users to interact with the jacket.
-
+![Smart Jacket Image](jacket.jpg)
 ## Getting Started
 
 To get started with the IoT Smart Jacket project, follow these steps:
@@ -57,7 +57,7 @@ We leverage [CONSENTIUM CLOUD](https://www.consentiuminc.online/) as our IoT ser
 
 By integrating CONSENTIUM CLOUD into our project, we can provide users with valuable insights and a seamless IoT experience.
 
-For more information on how to connect our IoT Smart Jacket with CONSENTIUM CLOUD, refer to the [CONSENTIUM CLOUD Documentation](https://docs.consentium.cloud/).
+For more information on how to connect our IoT Smart Jacket with CONSENTIUM CLOUD, refer to the [CONSENTIUM CLOUD Documentation]((https://github.com/ConsentiumInc/ConsentiumThingsDalton))(https://github.com/ConsentiumInc/ConsentiumThingsDalton)).
 
 **Note:** You will need to obtain API keys or credentials from CONSENTIUM CLOUD to establish the connection. Make sure to keep these credentials secure and follow best practices for IoT data security.
 
@@ -77,5 +77,6 @@ We would like to acknowledge the open-source community for their valuable contri
 ## Contact
 
 For inquiries or support, please contact [MISTER NEGATIVE](mailto:misternegative21@gmail.com).
+
 
 --- 
